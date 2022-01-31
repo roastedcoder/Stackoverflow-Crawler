@@ -5,13 +5,15 @@ const request = require('request');
 const cheerio = require('cheerio');
 const fs = require('fs');
 const express = require('express');
-const http = require("http");
+const writeStream = fs.createWriteStream('data.csv');
+
+writeStream.write(`QuestionURL, Views, Upvotes, Answers \n`);
 
 const app = express();
 const BASE_URL = 'https://stackoverflow.com/';
 
 
-request('https://stackoverflow.com/questions', function (err, res, body) {
+request('https://stackoverflow.com/questions?page=1&pagesize=50', function (err, res, body) {
     if(err) console.log(err, "error occured while hitting URL");
     else {
         const $ = cheerio.load(body);
@@ -24,9 +26,8 @@ request('https://stackoverflow.com/questions', function (err, res, body) {
 
             const questionURL = BASE_URL + href;
 
-            
-
-            console.log(questionURL);
+            writeStream.write(`${questionURL}, ${views}, ${upvotes}, ${answers} \n`);
         });
+        console.log('Crawling Done...');
     }
 });
