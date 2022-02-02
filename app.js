@@ -18,7 +18,7 @@ writeStream.write(`QuestionURL, Views, Upvotes, Answers, pID \n`);
 
 
 const BASE_URL = 'https://stackoverflow.com/';
-const pages = 100;
+const pages = 1; // not 10000 coz they blocked my IP for some time
 
 if(cluster.isMaster) {
     console.log(`Master ${process.pid} is running...`);
@@ -31,9 +31,9 @@ else { // using worker processes to achieve concurrency
     console.log(message);
     scrapData(process.pid); // scraping and saving the data into .csv
 }
-function scrapData(pID) { // scraping the data using cheerio
+async function scrapData(pID) { // scraping the data using cheerio asynchronously
     for(let i = 1; i<=pages; i++) {
-        request(`https://stackoverflow.com/questions?tab=newest&page=${i}`, function (err, res, body) {
+        await request(`https://stackoverflow.com/questions?tab=newest&page=${i}`, function (err, res, body) {
             if(err) console.log(err, "error occured while hitting URL");
             else {
                 const $ = cheerio.load(body); // getting the DOM of the required web-page
@@ -46,7 +46,7 @@ function scrapData(pID) { // scraping the data using cheerio
                     const answers = $(e).find('.status').find('strong').html();
     
                     const questionURL = BASE_URL + href;
-    
+                    
                     writeStream.write(`${questionURL}, ${views}, ${upvotes}, ${answers}, ${pID} \n`);
                 });
                 
