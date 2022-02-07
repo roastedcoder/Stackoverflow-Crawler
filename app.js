@@ -18,7 +18,7 @@ writeStream.write(`QuestionURL, Views, Upvotes, Answers, pID \n`);
 
 
 const BASE_URL = 'https://stackoverflow.com/';
-const pages = 1; // not 10000 coz they blocked my IP for some time
+const pages = 500; // not 10000 coz they blocked my IP for some time
 
 if(cluster.isMaster) {
     console.log(`Master ${process.pid} is running...`);
